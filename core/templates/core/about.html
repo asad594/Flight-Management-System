@@ -1,0 +1,251 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Our Vision | SkyBound{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --deep-space: #020617;
+        --indigo-glow: rgba(99, 102, 241, 0.4);
+    }
+
+    .star-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .glass-card-premium {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(30px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+
+    .glass-card-premium:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .map-pulse {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: #6366f1;
+        border-radius: 50%;
+        box-shadow: 0 0 15px #6366f1;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(3); opacity: 0; }
+    }
+
+    .text-gradient {
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="bg-deep-space overflow-hidden">
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-20 px-8 overflow-hidden">
+        <canvas id="starCanvas" class="star-canvas"></canvas>
+        
+        <div class="absolute inset-0 z-0">
+            <img alt="Atmospheric Aviation" class="w-full h-full object-cover hero-parallax opacity-30 scale-110" id="hero-img"
+                src="https://images.unsplash.com/photo-1464802686167-b939a67e06a1?q=80&w=2070&auto=format&fit=crop" />
+            <div class="absolute inset-0 bg-gradient-to-b from-deep-space/60 via-deep-space/40 to-deep-space"></div>
+        </div>
+        
+        <div class="container mx-auto px-8 relative z-10">
+            <div class="max-w-5xl mx-auto text-center about-hero-text">
+                <span class="inline-block px-5 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.4em] mb-10">
+                    The SkyBound Manifesto
+                </span>
+                <h1 class="text-7xl md:text-9xl font-black text-white mb-10 tracking-tighter leading-none">
+                    Engineering <br/><span class="text-indigo-400 italic font-light">Ethereal Flight.</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-light leading-relaxed">
+                    We didn't just build a flight system. We redefined the very essence of atmospheric travel through quantum precision and luxury software.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bento Grid -->
+    <section class="py-40 bg-deep-space relative">
+        <div class="container mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[900px]">
+                <div class="md:col-span-8 md:row-span-2 glass-card-premium p-16 rounded-[4rem] relative overflow-hidden group reveal">
+                    <div class="absolute inset-0 z-0">
+                        <img alt="Precision" class="w-full h-full object-cover opacity-10 group-hover:scale-110 transition-transform duration-[10s]" src="{% static 'core/skybound_hero_bg.png' %}" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-deep-space via-deep-space/60 to-transparent"></div>
+                    </div>
+                    <div class="relative z-10 h-full flex flex-col justify-end">
+                        <span class="text-indigo-400 font-black text-[10px] uppercase tracking-[0.4em] mb-6 block">Foundation</span>
+                        <h2 class="text-5xl md:text-7xl font-black text-white mb-8 tracking-tighter leading-tight">Born from the <br/>Edge of Space.</h2>
+                        <p class="text-slate-400 text-xl font-light leading-relaxed max-w-2xl">
+                            SkyBound was established by aerospace renegades with a singular goal: to bring the clarity of the stratosphere to the chaos of global aviation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="md:col-span-4 glass-card-premium p-12 rounded-[3.5rem] flex flex-col items-center justify-center text-center reveal">
+                    <div class="w-20 h-20 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-8">
+                        <span class="material-symbols-outlined text-indigo-400 text-5xl">rocket_launch</span>
+                    </div>
+                    <h3 class="text-6xl font-black text-white mb-2 tracking-tighter counter" data-target="500">0</h3>
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">Global Hubs Connected</p>
+                </div>
+
+                <div class="md:col-span-4 glass-card-premium p-12 rounded-[3.5rem] flex flex-col justify-between reveal">
+                    <span class="material-symbols-outlined text-indigo-400 text-6xl mb-10">verified_user</span>
+                    <div>
+                        <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">99.9% Safety</h3>
+                        <p class="text-slate-500 font-light leading-relaxed">
+                            Our proprietary flight path algorithms prioritize passenger biological well-being and structural integrity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leadership Section -->
+    <section class="py-40 bg-deep-space">
+        <div class="container mx-auto px-8">
+            <div class="text-center mb-32 reveal">
+                <h2 class="text-5xl md:text-7xl font-black text-white tracking-tighter mb-6">Flight Commanders</h2>
+                <p class="text-slate-400 text-xl font-light">The visionaries steering SkyBound towards the future.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {% for i in "1234" %}
+                <div class="glass-card-premium p-8 rounded-[3rem] group reveal team-card">
+                    <div class="aspect-[4/5] rounded-[2rem] overflow-hidden mb-8 border border-white/10 relative">
+                        <div class="absolute inset-0 bg-indigo-600/20 mix-blend-overlay group-hover:opacity-0 transition-opacity z-10"></div>
+                        <img alt="Leader" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 grayscale group-hover:grayscale-0" 
+                             src="https://i.pravatar.cc/400?u={{ forloop.counter }}" />
+                    </div>
+                    <h4 class="text-2xl font-black text-white mb-2 tracking-tighter group-hover:text-indigo-400 transition-colors">
+                        {% if forloop.counter == "1" %}Julian Vance{% elif forloop.counter == "2" %}Elena Thorne{% elif forloop.counter == "3" %}Marcus Chen{% else %}Sasha Ivanov{% endif %}
+                    </h4>
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">
+                        {% if forloop.counter == "1" %}Chief Executive{% elif forloop.counter == "2" %}Tech Lead{% elif forloop.counter == "3" %}Operations{% else %}Experience{% endif %}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Star Background
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resize);
+        resize();
+        
+        for(let i=0; i<150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.3
+            });
+        }
+        
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            stars.forEach(star => {
+                star.y -= star.speed;
+                if(star.y < 0) star.y = canvas.height;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        gsap.from(".about-hero-text > *", {
+            duration: 1.5,
+            y: 50,
+            opacity: 0,
+            stagger: 0.3,
+            ease: "power4.out"
+        });
+
+        gsap.utils.toArray('.reveal').forEach(el => {
+            gsap.to(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 85%",
+                    toggleActions: "play none none none",
+                    once: true
+                },
+                y: 0,
+                opacity: 1,
+                duration: 1.2,
+                ease: "power3.out"
+            });
+        });
+
+        // 3D Tilt for Team Cards
+        const teamCards = document.querySelectorAll('.team-card');
+        teamCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 15;
+                const rotateY = (centerX - x) / 15;
+                gsap.to(card, { rotateX, rotateY, duration: 0.5, ease: "power2.out" });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateX: 0, rotateY: 0, duration: 1, ease: "elastic.out(1, 0.3)" });
+            });
+        });
+
+        // Counter Animation
+        const counter = document.querySelector('.counter');
+        const target = +counter.getAttribute('data-target');
+        gsap.to(counter, {
+            scrollTrigger: { trigger: counter, start: "top 90%" },
+            innerText: target,
+            duration: 2,
+            snap: { innerText: 1 },
+            onUpdate: function() { this.targets()[0].innerText += '+'; }
+        });
+    });
+</script>
+{% endblock %}

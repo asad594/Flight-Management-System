@@ -1,0 +1,106 @@
+{% extends 'core/admin_base.html' %}
+{% block title %}Booking Logs | SkyBound Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12">
+    <div class="flex justify-between items-end reveal">
+        <div>
+            <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Transaction Stream</span>
+            <h1 class="font-['Space_Grotesk'] text-5xl font-black text-white tracking-tighter mb-2">Booking <span class="text-cyan-400">Logs</span></h1>
+            <p class="text-slate-500 text-sm font-medium">Real-time tracking of passenger reservations and global payment flows.</p>
+        </div>
+    </div>
+
+    <div class="glass-panel rounded-[3rem] overflow-hidden border border-white/5 shadow-2xl reveal">
+        <div class="p-10 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+            <h3 class="font-['Space_Grotesk'] text-2xl text-white font-black tracking-tight">Recent System Transactions</h3>
+            <div class="w-12 h-12 rounded-2xl bg-cyan-400/10 flex items-center justify-center text-cyan-400">
+                <span class="material-symbols-outlined">receipt_long</span>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-10 bg-black/20">
+            {% for booking in bookings %}
+            <div class="group reveal-card relative">
+                <div class="glass-card p-10 rounded-[2.5rem] relative overflow-hidden hover:bg-white/[0.06] transition-all duration-500 hover:-translate-y-2 border border-white/5 hover:border-cyan-400/30">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-cyan-400/5 rounded-full blur-3xl group-hover:bg-cyan-400/10 transition-all duration-700"></div>
+                    
+                    <div class="flex justify-between items-start mb-8 relative z-10">
+                        <div>
+                            <p class="text-[9px] text-slate-600 uppercase tracking-widest font-black mb-1">Traveler</p>
+                            <p class="text-white font-black text-xl tracking-tight">{{ booking.user.username }}</p>
+                        </div>
+                        <span class="bg-emerald-400/5 text-emerald-400 border border-emerald-400/20 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest">
+                            {{ booking.status }}
+                        </span>
+                    </div>
+                    
+                    <div class="space-y-6 relative z-10">
+                        <div class="flex items-center gap-4 text-sm">
+                            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-cyan-400">
+                                <span class="material-symbols-outlined text-lg">flight</span>
+                            </div>
+                            <span class="text-white font-black tracking-widest text-xs uppercase">{{ booking.flight.flight_number }}</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-sm">
+                            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-purple-400">
+                                <span class="material-symbols-outlined text-lg">route</span>
+                            </div>
+                            <span class="text-slate-400 font-bold">{{ booking.flight.origin }} <span class="text-cyan-400 mx-2">➔</span> {{ booking.flight.destination }}</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-sm">
+                            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-amber-400">
+                                <span class="material-symbols-outlined text-lg">calendar_today</span>
+                            </div>
+                            <span class="text-slate-400 font-bold">{{ booking.booking_date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-10 pt-8 border-t border-white/5 flex justify-between items-center relative z-10">
+                        <span class="text-[9px] text-slate-700 font-black tracking-widest uppercase">ID: #{{ booking.id }}</span>
+                        <div class="flex gap-4">
+                            <a href="/reservation/{{ booking.id }}/" class="text-cyan-400 hover:text-white transition-colors flex items-center justify-center w-8 h-8 rounded-full bg-cyan-400/10 hover:bg-cyan-400/20" title="View Details">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </a>
+                            <a href="/admin-complete-booking/{{ booking.id }}/" class="text-emerald-400 hover:text-white transition-colors flex items-center justify-center w-8 h-8 rounded-full bg-emerald-400/10 hover:bg-emerald-400/20" title="Complete Booking">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                            </a>
+                            <a href="/admin-delete-booking/{{ booking.id }}/" class="text-rose-400 hover:text-white transition-colors flex items-center justify-center w-8 h-8 rounded-full bg-rose-400/10 hover:bg-rose-400/20" title="Delete Booking">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".reveal", {
+            duration: 1.5,
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            ease: "power4.out"
+        });
+
+        gsap.from(".reveal-card", {
+            scrollTrigger: {
+                trigger: ".grid",
+                start: "top 95%",
+                once: true
+            },
+            duration: 1.2,
+            y: 30,
+            opacity: 0,
+            stagger: 0.1,
+            ease: "power3.out"
+        });
+    });
+</script>
+{% endblock %}

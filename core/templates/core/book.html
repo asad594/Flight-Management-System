@@ -1,0 +1,386 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Finalize Journey | SkyBound{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --deep-space: #020617;
+    }
+
+    .star-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .glass-card-premium {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(40px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+
+    .seat {
+        aspect-ratio: 1/1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        font-size: 10px;
+        font-weight: 800;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .seat:hover:not(.occupied):not(.selected) {
+        border-color: #6366f1;
+        background: rgba(99, 102, 241, 0.15);
+        transform: scale(1.15) translateY(-2px);
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .seat.selected {
+        background: #6366f1;
+        border-color: #818cf8;
+        color: white;
+        box-shadow: 0 0 25px rgba(99, 102, 241, 0.6);
+        transform: scale(1.1);
+    }
+
+    .seat.occupied {
+        background: rgba(255, 255, 255, 0.01);
+        border-color: transparent;
+        cursor: not-allowed;
+        opacity: 0.1;
+        color: rgba(255, 255, 255, 0.05);
+    }
+
+    .booking-input-group {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .booking-input-group:focus-within {
+        border-color: #6366f1;
+        background: rgba(99, 102, 241, 0.05);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+    }
+
+    input, select {
+        background: transparent !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="min-h-screen pt-32 pb-40 px-8 relative overflow-hidden bg-deep-space">
+    <canvas id="starCanvas" class="star-canvas"></canvas>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="mb-16 booking-header">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-[0.4em] mb-6">
+                Reservation Protocol
+            </span>
+            <h1 class="text-6xl font-black text-white tracking-tighter mb-4">Finalize <span class="text-indigo-400">Journey</span></h1>
+            <p class="text-slate-400 text-xl font-light max-w-2xl">Confirm your details and select your position in the stratosphere.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <!-- Left: Flight & Passenger Info -->
+            <div class="lg:col-span-5 space-y-10">
+                <div class="glass-card-premium rounded-[3rem] overflow-hidden reveal booking-info-card">
+                    <div class="h-40 relative">
+                        <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-40" alt="Dest" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-deep-space to-transparent"></div>
+                        <div class="absolute bottom-8 left-10">
+                            <p class="text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Flight {{ flight.flight_number }}</p>
+                            <h2 class="text-3xl font-black text-white tracking-tighter flex items-center gap-4">
+                                {{ flight.origin }}
+                                <span class="material-symbols-outlined text-indigo-400">trending_flat</span>
+                                {{ flight.destination }}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="p-10 grid grid-cols-2 gap-8 border-t border-white/5">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2">Departure</p>
+                            <p class="text-xl font-black text-white">{{ flight.departure_time|date:"H:i" }} <span class="text-slate-500 text-sm font-normal">{{ flight.departure_time|date:"M d" }}</span></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2">Units Available</p>
+                            <p class="text-xl font-black text-emerald-400">{{ flight.seats_available }} Seats</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" id="bookingForm" class="space-y-8">
+                    <div class="glass-card-premium p-10 rounded-[3rem] space-y-8 reveal">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                <span class="material-symbols-outlined">person_outline</span>
+                            </div>
+                            <h3 class="text-xl font-black text-white tracking-tight">Passenger Details</h3>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] ml-6">Legal Name</label>
+                                <div class="booking-input-group px-8 py-4">
+                                    <input name="passenger_name" class="w-full text-sm font-medium focus:outline-none placeholder:text-slate-700" placeholder="e.g. John Vance" type="text" required/>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] ml-6">Email Address</label>
+                                <div class="booking-input-group px-8 py-4">
+                                    <input name="passenger_email" class="w-full text-sm font-medium focus:outline-none placeholder:text-slate-700" placeholder="pilot@skybound.com" type="email" required/>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] ml-6">ID / Passport</label>
+                                <div class="booking-input-group px-8 py-4">
+                                    <input name="passport" class="w-full text-sm font-medium focus:outline-none placeholder:text-slate-700" placeholder="Passport or CNIC" type="text" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="seat_number" id="selectedSeatInput" value="A3"/>
+                    </div>
+
+                    <div class="glass-card-premium p-10 rounded-[3rem] space-y-8 reveal">
+                        <h3 class="text-xl font-black text-white tracking-tight flex items-center gap-4">
+                            <span class="material-symbols-outlined text-indigo-400">account_balance_wallet</span>
+                            Payment Method
+                        </h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            {% for method in payment_methods %}
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="payment_method" value="{{ method.id }}" class="hidden peer"/>
+                                <div class="p-6 rounded-[2rem] border border-white/10 bg-white/5 text-center peer-checked:border-indigo-400 peer-checked:bg-indigo-400/10 transition-all group-hover:bg-white/10">
+                                    <span class="material-symbols-outlined text-slate-500 peer-checked:text-indigo-400 block mb-3 text-2xl group-hover:scale-110 transition-transform">
+                                        {{ method.icon }}
+                                    </span>
+                                    <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest">{{ method.name }}</span>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right: Interactive Seat Map -->
+            <div class="lg:col-span-7 reveal">
+                <div class="glass-card-premium p-12 rounded-[4rem] h-full flex flex-col">
+                    <div class="flex justify-between items-center mb-12">
+                        <h3 class="text-3xl font-black text-white tracking-tighter">Deck Selection</h3>
+                        <div class="flex gap-6 items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-white/10"></div>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Open</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_10px_#6366f1]"></div>
+                                <span class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Reserved</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cabin Visualizer -->
+                    <div class="flex-grow bg-black/40 rounded-[3rem] p-12 border border-white/5 relative overflow-auto scrollbar-hide cabin-visualizer">
+                        <div class="max-w-sm mx-auto space-y-12 relative z-10">
+                            <!-- Cockpit -->
+                            <div class="flex flex-col items-center gap-4 opacity-30 mb-16">
+                                <div class="w-20 h-20 rounded-full border-2 border-indigo-500/30 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-indigo-400 text-4xl">flight</span>
+                                </div>
+                                <div class="h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent w-full"></div>
+                            </div>
+
+                            <!-- Decks -->
+                            <!-- Sky Suite Section -->
+                            <div class="space-y-6">
+                                <p class="text-[10px] font-black text-center uppercase tracking-[0.4em] text-amber-400">Sky Suite</p>
+                                <div class="grid grid-cols-4 gap-4">
+                                    <div class="seat" data-seat="A1">A1</div>
+                                    <div class="seat occupied" data-seat="A2">A2</div>
+                                    <div class="seat selected" data-seat="A3">A3</div>
+                                    <div class="seat" data-seat="A4">A4</div>
+                                </div>
+                            </div>
+
+                            <!-- Premium Section -->
+                            <div class="space-y-6">
+                                <p class="text-[10px] font-black text-center uppercase tracking-[0.4em] text-slate-600">Premium</p>
+                                <div class="grid grid-cols-4 gap-4">
+                                    <div class="seat" data-seat="4A">4A</div>
+                                    <div class="seat occupied" data-seat="4B">4B</div>
+                                    <div class="seat" data-seat="4C">4C</div>
+                                    <div class="seat" data-seat="4D">4D</div>
+                                    <div class="seat" data-seat="5A">5A</div>
+                                    <div class="seat" data-seat="5B">5B</div>
+                                    <div class="seat" data-seat="5C">5C</div>
+                                    <div class="seat occupied" data-seat="5D">5D</div>
+                                </div>
+                            </div>
+
+                            <!-- Main Section -->
+                            <div class="space-y-6">
+                                <p class="text-[10px] font-black text-center uppercase tracking-[0.4em] text-slate-600">Main Cabin</p>
+                                <div class="grid grid-cols-4 gap-4">
+                                    <div class="seat" data-seat="12A">12A</div>
+                                    <div class="seat" data-seat="12B">12B</div>
+                                    <div class="seat occupied" data-seat="12C">12C</div>
+                                    <div class="seat" data-seat="12D">12D</div>
+                                    <div class="seat" data-seat="13A">13A</div>
+                                    <div class="seat occupied" data-seat="13B">13B</div>
+                                    <div class="seat" data-seat="13C">13C</div>
+                                    <div class="seat" data-seat="13D">13D</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Bar -->
+                    <div class="mt-10 p-8 bg-white/5 border border-white/10 rounded-[3rem] flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div class="flex items-center gap-10">
+                            <div>
+                                <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">Position</p>
+                                <p class="text-3xl font-black text-indigo-400" id="displaySeat">A3 <span class="text-xs font-normal text-slate-500">Suite</span></p>
+                            </div>
+                            <div class="h-12 w-px bg-white/5 hidden md:block"></div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">Allocation</p>
+                                <p class="text-3xl font-black text-white">${{ flight.price }}</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="document.getElementById('bookingForm').submit();"
+                            class="w-full md:w-auto px-12 py-6 bg-indigo-600 text-white rounded-[2rem] font-black uppercase tracking-[0.4em] text-[10px] shadow-[0_20px_40px_rgba(79,70,229,0.3)] hover:shadow-[0_30px_60px_rgba(79,70,229,0.5)] hover:-translate-y-1 active:scale-95 transition-all duration-500">
+                            Confirm Secure Passage
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Star Background
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resize);
+        resize();
+        
+        for(let i=0; i<150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.4
+            });
+        }
+        
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            stars.forEach(star => {
+                star.y -= star.speed;
+                if(star.y < 0) star.y = canvas.height;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".booking-header > *", {
+            duration: 1.5,
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            ease: "power4.out"
+        });
+
+        gsap.utils.toArray('.reveal').forEach(el => {
+            gsap.to(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 90%"
+                },
+                y: 0,
+                opacity: 1,
+                duration: 1.2,
+                ease: "power3.out"
+            });
+        });
+
+        // 3D Tilt for Info Card
+        const infoCard = document.querySelector('.booking-info-card');
+        infoCard.addEventListener('mousemove', (e) => {
+            const rect = infoCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+            gsap.to(infoCard, { rotateX, rotateY, duration: 0.5, ease: "power2.out" });
+        });
+        infoCard.addEventListener('mouseleave', () => {
+            gsap.to(infoCard, { rotateX: 0, rotateY: 0, duration: 1, ease: "elastic.out(1, 0.3)" });
+        });
+
+        // Seat Selection Logic
+        const seats = document.querySelectorAll('.seat:not(.occupied)');
+        const seatInput = document.getElementById('selectedSeatInput');
+        const displaySeat = document.getElementById('displaySeat');
+
+        seats.forEach(seat => {
+            seat.addEventListener('click', () => {
+                seats.forEach(s => s.classList.remove('selected'));
+                seat.classList.add('selected');
+                const seatNum = seat.getAttribute('data-seat');
+                seatInput.value = seatNum;
+                
+                let type = 'Main';
+                if (seatNum.startsWith('A')) type = 'Suite';
+                else if (seatNum.startsWith('4') || seatNum.startsWith('5')) type = 'Premium';
+                
+                displaySeat.innerHTML = `${seatNum} <span class="text-xs font-normal text-slate-500">${type}</span>`;
+                
+                // Scale animation on click
+                gsap.fromTo(seat, { scale: 0.8 }, { scale: 1.1, duration: 0.4, ease: "back.out(2)" });
+            });
+        });
+    });
+</script>
+{% endblock %}

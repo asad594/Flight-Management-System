@@ -1,0 +1,142 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Reservation Detail | SkyBound{% endblock %}
+
+{% block extra_head %}
+<style>
+    .detail-card {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 3rem;
+    }
+    .status-badge {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+    
+    @media print {
+        body {
+            background-color: white !important;
+        }
+        body * {
+            visibility: hidden;
+        }
+        #printable-ticket, #printable-ticket * {
+            visibility: visible;
+        }
+        #printable-ticket {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border: none;
+            background: none;
+            backdrop-filter: none;
+        }
+        /* Convert text colors to black/dark gray for printing on white paper */
+        #printable-ticket .text-white, #printable-ticket .text-indigo-400 {
+            color: black !important;
+        }
+        #printable-ticket .text-slate-400, #printable-ticket .text-slate-500 {
+            color: #333 !important;
+        }
+        #printable-ticket .border-white\\/5 {
+            border-color: #ddd !important;
+        }
+        #printable-ticket .status-badge {
+            border-color: black !important;
+            color: black !important;
+            background: transparent !important;
+        }
+        /* Hide the download button and links when printing */
+        #printable-ticket button, #printable-ticket a {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="min-h-screen pt-32 pb-40 px-8 bg-[#020617]">
+    <div class="max-w-4xl mx-auto" id="printable-ticket">
+        <div class="mb-12 flex items-center justify-between">
+            <div>
+                <a href="{% url 'my_bookings' %}" class="text-indigo-400 flex items-center gap-2 mb-4 hover:gap-4 transition-all no-underline text-sm font-bold uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span> Back to Dashboard
+                </a>
+                <h1 class="text-5xl font-black text-white tracking-tighter">Reservation <span class="text-indigo-400">#{{ booking.id }}</span></h1>
+            </div>
+            <div class="status-badge px-6 py-2 rounded-full font-black uppercase tracking-widest text-[10px]">
+                {{ booking.status }}
+            </div>
+        </div>
+
+        <div class="detail-card p-12 space-y-16">
+            <!-- Flight Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
+                <div class="text-center md:text-left">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Origin</p>
+                    <p class="text-3xl font-black text-white">{{ booking.flight.origin }}</p>
+                    <p class="text-slate-400 text-sm mt-1">{{ booking.flight.departure_time|date }}</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="material-symbols-outlined text-indigo-400 text-3xl mb-2">flight_takeoff</span>
+                    <div class="w-full h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent"></div>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">{{ booking.flight.flight_number }}</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Destination</p>
+                    <p class="text-3xl font-black text-white">{{ booking.flight.destination }}</p>
+                    <p class="text-slate-400 text-sm mt-1">{{ booking.flight.arrival_time|date }}</p>
+                </div>
+            </div>
+
+            <!-- Passenger Section -->
+            <div class="pt-12 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="space-y-6">
+                    <h3 class="text-lg font-black text-white uppercase tracking-widest">Passenger Information</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Full Name</p>
+                            <p class="text-white font-medium">{{ booking.passenger.username }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Contact Email</p>
+                            <p class="text-white font-medium">{{ booking.passenger.email }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <h3 class="text-lg font-black text-white uppercase tracking-widest">Booking Summary</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Confirmation Date</p>
+                            <p class="text-white font-medium">{{ booking.booking_date|date }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Total Payment</p>
+                            <p class="text-2xl font-black text-indigo-400">${{ booking.flight.price }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Footer -->
+            <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-4 text-slate-500">
+                    <span class="material-symbols-outlined">verified_user</span>
+                    <p class="text-[10px] font-bold uppercase tracking-widest">Secured by SkyBound Neural Encryption</p>
+                </div>
+                <button onclick="window.print()" class="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all">
+                    Download Manifest
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

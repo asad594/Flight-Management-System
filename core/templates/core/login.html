@@ -1,0 +1,226 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --deep-space: #020617;
+    }
+
+    .glass-panel-premium {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(40px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .star-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    input:-webkit-autofill {
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .scan-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(to right, transparent, #6366f1, transparent);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    @keyframes authEntrance {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-card {
+        animation: authEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .submit-btn {
+        opacity: 0;
+        animation: authEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="flex min-h-screen relative overflow-hidden bg-deep-space">
+    <!-- Starry Background -->
+    <canvas id="starCanvas" class="star-canvas"></canvas>
+
+    <!-- Visual Section (Left) -->
+    <section class="hidden lg:flex lg:w-3/5 relative p-10 z-10">
+        <div class="relative w-full h-full overflow-hidden rounded-[4rem] border border-white/5 group bg-black/40">
+            <div class="absolute inset-0 z-0 scale-110 parallax-bg">
+                <img alt="Atmospheric" class="w-full h-full object-cover opacity-60" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2074&auto=format&fit=crop" />
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-tr from-deep-space via-deep-space/20 to-transparent z-10"></div>
+
+            <div class="absolute top-20 left-20 z-20 auth-hero-text">
+                <span class="text-indigo-400 font-black text-5xl tracking-tighter drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]">SKYBOUND</span>
+            </div>
+
+            <div class="absolute bottom-20 left-20 z-20 max-w-xl auth-hero-text">
+                <span class="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 text-white/60 text-[10px] font-bold uppercase tracking-[0.3em] mb-8">
+                    Tier 1 Encryption Active
+                </span>
+                <h1 class="text-7xl font-black text-white leading-none tracking-tighter mb-10">
+                    Master the <br><span class="text-indigo-400">Atmosphere.</span>
+                </h1>
+                <p class="text-xl text-slate-400 font-light leading-relaxed">
+                    Where precision flight management meets luxury aesthetics. Your portal to seamless global travel awaits.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Section (Right) -->
+    <section class="w-full lg:w-2/5 flex items-center justify-center p-8 relative z-10">
+        <div class="w-full max-w-[500px] glass-panel-premium p-16 rounded-[4rem] relative group border border-white/10 auth-card">
+            <div class="mb-16 card-header">
+                <h2 class="text-5xl font-black text-white mb-4 tracking-tighter">Welcome Back</h2>
+                <p class="text-slate-500 font-light text-lg">Identity verification required.</p>
+            </div>
+
+            <form class="space-y-8" method="POST" action="/login/">
+                {% if error %}
+                <div class="p-5 rounded-3xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold flex items-center gap-3 error-msg">
+                    <span class="material-symbols-outlined text-sm">warning</span>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <div class="space-y-3 input-group group">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] ml-6">Traveler Identity</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors pointer-events-none z-20">account_circle</span>
+                        <input name="username" class="w-full bg-white/5 border border-white/10 rounded-3xl py-6 !pl-20 pr-8 text-white focus:outline-none focus:border-indigo-400/50 focus:bg-white/10 transition-all font-medium placeholder:text-slate-700 relative z-10" placeholder="Username / Email" type="text" required />
+                    </div>
+                </div>
+
+                <div class="space-y-3 input-group group">
+                    <div class="flex justify-between px-6">
+                        <label class="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em]">Access Key</label>
+                    </div>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors pointer-events-none z-20">vpn_key</span>
+                        <input name="password" class="w-full bg-white/5 border border-white/10 rounded-3xl py-6 !pl-20 pr-8 text-white focus:outline-none focus:border-indigo-400/50 focus:bg-white/10 transition-all font-medium placeholder:text-slate-700 relative z-10" placeholder="••••••••" type="password" required />
+                    </div>
+                    <div class="flex justify-end px-6 mt-2">
+                        <a href="#" class="text-[10px] font-bold text-indigo-400/60 hover:text-indigo-400 transition-colors no-underline uppercase tracking-widest">Forgot Access Key?</a>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-6 bg-indigo-600 text-white font-black uppercase tracking-[0.4em] rounded-3xl shadow-[0_20px_50px_rgba(79,70,229,0.3)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.5)] hover:-translate-y-1 active:scale-95 transition-all duration-500 text-[10px] relative overflow-hidden submit-btn">
+                    <span class="relative z-10">Sign In to Dashboard</span>
+                    <div class="scan-line"></div>
+                </button>
+            </form>
+
+            <div class="mt-16 pt-12 border-t border-white/5 text-center card-footer">
+                <p class="text-sm text-slate-500 mb-6">
+                    New to the fleet?
+                    <a class="text-indigo-400 font-black ml-2 hover:text-indigo-300 transition-colors no-underline" href="{% url 'register' %}">JOIN NOW</a>
+                </p>
+                
+                <button type="button" onclick="quickLogin()" class="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-indigo-400 hover:border-indigo-400/30 transition-all group">
+                    <span class="flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">shield_person</span>
+                        Quick Admin Login
+                    </span>
+                </button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Star Background
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resize);
+        resize();
+        
+        for(let i=0; i<150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.5
+            });
+        }
+        
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            stars.forEach(star => {
+                star.y -= star.speed;
+                if(star.y < 0) star.y = canvas.height;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // GSAP Animations
+        // Parallax Effect
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            gsap.to(".parallax-bg", {
+                x: x,
+                y: y,
+                duration: 2,
+                ease: "power2.out"
+            });
+        });
+
+        // Submit Button Scan Effect
+        const submitBtn = document.querySelector('.submit-btn');
+        const scanLine = document.querySelector('.scan-line');
+        
+        submitBtn.addEventListener('mouseenter', () => {
+            gsap.to(scanLine, {
+                opacity: 1,
+                top: "100%",
+                duration: 1.5,
+                repeat: -1,
+                ease: "none"
+            });
+        });
+        
+        submitBtn.addEventListener('mouseleave', () => {
+            gsap.to(scanLine, {
+                opacity: 0,
+                duration: 0.3
+            });
+        });
+    });
+
+    function quickLogin() {
+        document.querySelector('input[name="username"]').value = 'Admin';
+        document.querySelector('input[name="password"]').value = 'admin@123';
+        document.querySelector('form').submit();
+    }
+</script>
+{% endblock %}

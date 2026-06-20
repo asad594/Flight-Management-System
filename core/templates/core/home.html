@@ -1,0 +1,557 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --sky-blue: #60a5fa;
+        --deep-space: #020617;
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    /* Stars Background */
+    .stars-container {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: twinkle var(--duration) infinite ease-in-out;
+    }
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .hero-parallax {
+        transition: transform 0.1s ease-out;
+    }
+
+    .glass-card-premium {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+
+    .glass-card-premium:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .text-gradient {
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Floating elements */
+    .floating-icon {
+        animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* Glow Effect */
+    .glow-indigo {
+        box-shadow: 0 0 50px rgba(99, 102, 241, 0.2);
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Immersive Hero Section -->
+<section class="relative min-h-screen flex items-center pt-32 overflow-hidden bg-deep-space">
+    <!-- Starry Background -->
+    <div class="stars-container" id="stars-container"></div>
+    
+    <!-- Hero Content -->
+    <div class="container mx-auto px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div class="space-y-12">
+                <div class="hero-text">
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-[0.3em] mb-8">
+                        The Future of Global Mobility
+                    </span>
+                    <h1 class="text-7xl md:text-9xl font-black text-white mb-8 tracking-tighter leading-none">
+                        Fly Into <br/><span class="text-indigo-400 italic font-light">Tomorrow</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-slate-400 max-w-xl font-light leading-relaxed">
+                        Experience sub-orbital speeds and neural-linked navigation. SkyBound isn't just travel; it's a transcendence of geography.
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-6 hero-actions">
+                    <a href="{% url 'search' %}" class="px-10 py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-[0_20px_50px_rgba(79,70,229,0.4)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.6)] hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3">
+                        Book Flights <span class="material-symbols-outlined text-lg">rocket_launch</span>
+                    </a>
+                    <a href="{% url 'about' %}" class="px-10 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all flex items-center gap-3">
+                        About Us <span class="material-symbols-outlined text-lg">visibility</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Graphic/Card -->
+            <div class="hidden lg:block relative hero-graphic">
+                <div class="absolute -inset-20 bg-indigo-500/20 blur-[120px] rounded-full"></div>
+                <div class="glass-card-premium p-2 rounded-[3rem] glow-indigo transform -rotate-3 hover:rotate-0 transition-transform duration-1000">
+                    <img src="{% static 'core/skybound_hero_bg.png' %}" class="rounded-[2.5rem] w-full h-[600px] object-cover opacity-80" alt="Futuristic Jet">
+                    <div class="absolute bottom-12 left-12 right-12 p-8 bg-black/40 backdrop-blur-2xl rounded-3xl border border-white/10">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2">Current Route</p>
+                                <p class="text-2xl font-black text-white">NYC <span class="text-indigo-400">→</span> TOKYO</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">ETA</p>
+                                <p class="text-2xl font-black text-white">02:45 <span class="text-xs text-slate-500 font-light">HRS</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Search Section -->
+<section class="py-24 relative z-20 -mt-32">
+    <div class="container mx-auto px-8">
+        <div class="max-w-6xl mx-auto glass-card-premium p-1 rounded-[3rem] search-container">
+            <div class="bg-deep-space/80 backdrop-blur-3xl rounded-[2.8rem] p-10">
+                <form action="{% url 'search' %}" method="GET" class="grid grid-cols-1 md:grid-cols-11 gap-8 items-end">
+                    <div class="md:col-span-3 space-y-3">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] ml-2 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-indigo-500 rounded-full"></span> Departure
+                        </label>
+                        <div class="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-6 py-5 focus-within:border-indigo-400 focus-within:bg-white/10 transition-all">
+                            <span class="material-symbols-outlined text-indigo-400">flight_takeoff</span>
+                            <input name="origin" class="bg-transparent border-none p-0 focus:ring-0 text-white w-full placeholder:text-slate-600 text-sm font-medium" placeholder="Origin Hub" type="text" required />
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-1 flex justify-center pb-4">
+                        <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-indigo-400 hover:rotate-180 transition-all duration-700 cursor-pointer group">
+                            <span class="material-symbols-outlined text-lg group-hover:scale-125">sync_alt</span>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-3 space-y-3">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] ml-2 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-indigo-500 rounded-full"></span> Destination
+                        </label>
+                        <div class="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-6 py-5 focus-within:border-indigo-400 focus-within:bg-white/10 transition-all">
+                            <span class="material-symbols-outlined text-indigo-400">flight_land</span>
+                            <input name="destination" class="bg-transparent border-none p-0 focus:ring-0 text-white w-full placeholder:text-slate-600 text-sm font-medium" placeholder="Arrival Hub" type="text" required />
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-4">
+                        <button type="submit" class="w-full bg-white text-deep-space font-black py-5 rounded-2xl hover:bg-indigo-400 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]">
+                            Initiate Hyper-Search
+                            <span class="material-symbols-outlined text-lg">search</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dynamic Stats -->
+<section class="py-32 border-y border-white/5 bg-deep-space/50">
+    <div class="container mx-auto px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-16 text-center stats-grid">
+            <div class="reveal">
+                <div class="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-indigo-400">
+                    <span class="material-symbols-outlined text-3xl">public</span>
+                </div>
+                <p class="text-5xl font-black text-white mb-2 counter" data-target="2450">0</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">Orbital Nodes</p>
+            </div>
+            <div class="reveal">
+                <div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-purple-400">
+                    <span class="material-symbols-outlined text-3xl">hub</span>
+                </div>
+                <p class="text-5xl font-black text-white mb-2 counter" data-target="120">0</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">Global Hubs</p>
+            </div>
+            <div class="reveal">
+                <div class="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-emerald-400">
+                    <span class="material-symbols-outlined text-3xl">bolt</span>
+                </div>
+                <p class="text-5xl font-black text-white mb-2 counter" data-target="99">0</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">Uptime %</p>
+            </div>
+            <div class="reveal">
+                <div class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-amber-400">
+                    <span class="material-symbols-outlined text-3xl">groups</span>
+                </div>
+                <p class="text-5xl font-black text-white mb-2 counter" data-target="500">0</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">Elite Crew</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Signature Routes -->
+<section class="py-40 bg-deep-space relative">
+    <div class="container mx-auto px-8">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-10 reveal">
+            <div class="max-w-2xl">
+                <h2 class="text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-6">Signature <br/>Portals</h2>
+                <p class="text-slate-400 text-xl font-light leading-relaxed">Direct connections to the world's most elite destinations, optimized for speed and luxury.</p>
+            </div>
+            <a href="{% url 'search' %}" class="group flex items-center gap-4 text-indigo-400 no-underline">
+                <span class="text-[10px] font-bold uppercase tracking-[0.3em]">Full Network Map</span>
+                <div class="w-14 h-14 rounded-full border border-indigo-400/30 flex items-center justify-center group-hover:bg-indigo-400 group-hover:text-white transition-all duration-500">
+                    <span class="material-symbols-outlined">map</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 flights-grid">
+            {% for flight in flights %}
+            <div class="glass-card-premium group rounded-[3rem] overflow-hidden reveal flight-card">
+                <div class="h-80 relative overflow-hidden">
+                    <img alt="{{ flight.destination }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                        src="{% if forloop.counter == 1 %}{% static 'core/dubai.png' %}{% elif forloop.counter == 2 %}{% static 'core/tokyo.png' %}{% else %}{% static 'core/cabin.png' %}{% endif %}" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-deep-space via-transparent to-transparent opacity-60"></div>
+                    <div class="absolute top-8 right-8 bg-white/10 backdrop-blur-xl border border-white/20 px-5 py-2 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest">
+                        {{ flight.category }}
+                    </div>
+                </div>
+                <div class="p-12 space-y-8">
+                    <div class="flex justify-between items-center">
+                        <div class="space-y-1">
+                            <h3 class="text-3xl font-black text-white tracking-tighter">{{ flight.destination }}</h3>
+                            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm text-indigo-400">near_me</span> {{ flight.origin }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Credit</p>
+                            <p class="text-3xl font-black text-indigo-400">${{ flight.price }}</p>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'book_flight' flight.id %}" class="block w-full py-5 bg-indigo-600 rounded-2xl text-white text-center font-black uppercase tracking-[0.3em] text-[10px] shadow-lg shadow-indigo-500/20 hover:scale-[1.02] transition-all no-underline">
+                        Secure Passage
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- NEW SECTION: Fleet Manifest -->
+<section class="py-40 bg-deep-space relative overflow-hidden">
+    <div class="container mx-auto px-8">
+        <div class="text-center mb-24 reveal">
+            <span class="text-indigo-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">The Aerial Assets</span>
+            <h2 class="text-7xl font-black text-white tracking-tighter">Fleet <span class="text-indigo-400 italic font-light">Manifest</span></h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <!-- Hyper-First -->
+            <div class="glass-card-premium p-1 rounded-[3rem] reveal fleet-item">
+                <div class="bg-indigo-950/20 backdrop-blur-3xl rounded-[2.8rem] p-12 h-full border border-white/5 hover:border-indigo-500/30 transition-all duration-700">
+                    <div class="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center text-indigo-400 mb-10 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-4xl">rocket</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-6 tracking-tight">Hyper-First</h3>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-indigo-400 text-lg">check_circle</span> 180° Private Pods
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-indigo-400 text-lg">check_circle</span> Neural Entertainment
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-indigo-400 text-lg">check_circle</span> Zero-G Wine Cellar
+                        </li>
+                    </ul>
+                    <div class="pt-8 border-t border-white/5">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Cruise Speed</p>
+                        <p class="text-2xl font-black text-white">Mach 6.2</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stratos-Business -->
+            <div class="glass-card-premium p-1 rounded-[3rem] reveal fleet-item" style="transition-delay: 0.2s;">
+                <div class="bg-purple-950/20 backdrop-blur-3xl rounded-[2.8rem] p-12 h-full border border-white/5 hover:border-purple-500/30 transition-all duration-700">
+                    <div class="w-20 h-20 bg-purple-500/10 rounded-3xl flex items-center justify-center text-purple-400 mb-10">
+                        <span class="material-symbols-outlined text-4xl">flight_class</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-6 tracking-tight">Stratos-Business</h3>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-purple-400 text-lg">check_circle</span> Panoramic Views
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-purple-400 text-lg">check_circle</span> Kinetic Desks
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-purple-400 text-lg">check_circle</span> Priority Uplink
+                        </li>
+                    </ul>
+                    <div class="pt-8 border-t border-white/5">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Cruise Speed</p>
+                        <p class="text-2xl font-black text-white">Mach 4.8</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nova-Economy -->
+            <div class="glass-card-premium p-1 rounded-[3rem] reveal fleet-item" style="transition-delay: 0.4s;">
+                <div class="bg-emerald-950/20 backdrop-blur-3xl rounded-[2.8rem] p-12 h-full border border-white/5 hover:border-emerald-500/30 transition-all duration-700">
+                    <div class="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center text-emerald-400 mb-10">
+                        <span class="material-symbols-outlined text-4xl">airplanemode_active</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-6 tracking-tight">Nova-Economy</h3>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span> Smart Recline
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span> Global Wi-Fi 7
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400 text-sm">
+                            <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span> Nutrient-Rich Dining
+                        </li>
+                    </ul>
+                    <div class="pt-8 border-t border-white/5">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Cruise Speed</p>
+                        <p class="text-2xl font-black text-white">Mach 3.2</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEW SECTION: Engineering Excellence -->
+<section class="py-40 relative overflow-hidden bg-deep-space">
+    <div class="container mx-auto px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+            <div class="reveal">
+                <span class="text-indigo-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6 block">Beyond Engineering</span>
+                <h2 class="text-6xl font-black text-white tracking-tighter leading-none mb-10">Neural Linked <br/>Navigation</h2>
+                <div class="space-y-8">
+                    <div class="glass-card-premium p-8 rounded-3xl border-l-4 border-l-indigo-500">
+                        <h4 class="text-white font-bold mb-2">Adaptive Aero-Physics</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Our fleet dynamically reshapes its airframe in mid-flight to optimize for stratospheric density.</p>
+                    </div>
+                    <div class="glass-card-premium p-8 rounded-3xl border-l-4 border-l-purple-500">
+                        <h4 class="text-white font-bold mb-2">Quantum Stability</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Zero-latency stabilization systems ensure a motionless journey even at Mach 6.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="relative reveal">
+                <div class="absolute -inset-10 bg-indigo-500/10 blur-[100px] rounded-full animate-pulse"></div>
+                <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=2072&auto=format&fit=crop" class="rounded-[4rem] w-full h-[600px] object-cover shadow-2xl grayscale hover:grayscale-0 transition-all duration-1000" alt="Tech" />
+                <div class="absolute inset-0 bg-gradient-to-t from-deep-space via-transparent to-transparent"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEW SECTION: Global Network Map -->
+<section class="py-40 bg-deep-space relative overflow-hidden">
+    <div class="container mx-auto px-8 text-center mb-24 reveal">
+        <h2 class="text-7xl font-black text-white tracking-tighter mb-6">The Global <span class="text-indigo-400">Uplink</span></h2>
+        <p class="text-slate-500 text-xl font-light max-w-2xl mx-auto">Connecting 140+ stratospheric hubs through a seamless neural network.</p>
+    </div>
+    <div class="relative h-[800px] w-full reveal">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-screen"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-deep-space via-transparent to-deep-space"></div>
+        
+        <!-- Animated Map Markers -->
+        <div class="absolute top-1/4 left-1/4 group cursor-pointer">
+            <div class="w-4 h-4 bg-indigo-500 rounded-full animate-ping opacity-75"></div>
+            <div class="w-4 h-4 bg-indigo-500 rounded-full absolute top-0 shadow-[0_0_20px_#6366f1]"></div>
+            <div class="absolute top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all bg-black/80 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 whitespace-nowrap">
+                <p class="text-[10px] font-black text-white uppercase tracking-widest">New York Terminal</p>
+            </div>
+        </div>
+        <div class="absolute top-1/2 left-2/3 group cursor-pointer">
+            <div class="w-4 h-4 bg-purple-500 rounded-full animate-ping opacity-75" style="animation-delay: 1s"></div>
+            <div class="w-4 h-4 bg-purple-500 rounded-full absolute top-0 shadow-[0_0_20px_#a855f7]"></div>
+            <div class="absolute top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all bg-black/80 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 whitespace-nowrap">
+                <p class="text-[10px] font-black text-white uppercase tracking-widest">Tokyo Hub</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEW SECTION: Testimonials -->
+<section class="py-40 bg-deep-space relative">
+    <div class="container mx-auto px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <div class="glass-card-premium p-12 rounded-[3rem] space-y-8 reveal testimonial-card">
+                <span class="material-symbols-outlined text-indigo-400 text-5xl">format_quote</span>
+                <p class="text-xl text-slate-300 font-light leading-relaxed italic">"The transition between the atmosphere and the sub-orbital plane was completely imperceptible. SkyBound has redefined travel."</p>
+                <div class="flex items-center gap-6">
+                    <div class="w-14 h-14 rounded-full bg-white/10 border border-white/20"></div>
+                    <div>
+                        <p class="text-white font-black text-sm uppercase tracking-widest">Marcus Vance</p>
+                        <p class="text-slate-600 text-[10px] font-bold uppercase tracking-widest">Neural Tech CEO</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card-premium p-12 rounded-[3rem] space-y-8 reveal testimonial-card" style="transition-delay: 0.2s;">
+                <span class="material-symbols-outlined text-purple-400 text-5xl">format_quote</span>
+                <p class="text-xl text-slate-300 font-light leading-relaxed italic">"Dinner in Paris, meetings in Singapore. The MACH-6 fleet makes the world feel like a single neighborhood."</p>
+                <div class="flex items-center gap-6">
+                    <div class="w-14 h-14 rounded-full bg-white/10 border border-white/20"></div>
+                    <div>
+                        <p class="text-white font-black text-sm uppercase tracking-widest">Elena Rossi</p>
+                        <p class="text-slate-600 text-[10px] font-bold uppercase tracking-widest">Global Architect</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card-premium p-12 rounded-[3rem] space-y-8 reveal testimonial-card" style="transition-delay: 0.4s;">
+                <span class="material-symbols-outlined text-emerald-400 text-5xl">format_quote</span>
+                <p class="text-xl text-slate-300 font-light leading-relaxed italic">"Safety protocols and luxury meet in a way I've never seen before. Truly the elite standard of the century."</p>
+                <div class="flex items-center gap-6">
+                    <div class="w-14 h-14 rounded-full bg-white/10 border border-white/20"></div>
+                    <div>
+                        <p class="text-white font-black text-sm uppercase tracking-widest">David Chen</p>
+                        <p class="text-slate-600 text-[10px] font-bold uppercase tracking-widest">Venture Pilot</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEW SECTION: Final CTA -->
+<section class="py-60 relative overflow-hidden bg-deep-space">
+    <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/20 to-transparent"></div>
+    <div class="container mx-auto px-8 text-center relative z-10 reveal">
+        <h2 class="text-8xl font-black text-white tracking-tighter mb-12">Ready for <br/><span class="text-indigo-400">Liftoff?</span></h2>
+        <a href="{% url 'register' %}" class="inline-flex items-center gap-4 px-16 py-8 bg-white text-deep-space rounded-[2rem] font-black uppercase tracking-[0.4em] text-[12px] hover:bg-indigo-400 hover:text-white transition-all shadow-2xl">
+            Create Protocol <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+    </div>
+</section>
+
+<script>
+    // GSAP Animations
+    document.addEventListener('DOMContentLoaded', () => {
+        // Hero Animation
+        const tl = gsap.timeline();
+        tl.from(".hero-text", { y: 100, opacity: 0, duration: 1.2, ease: "power4.out" })
+          .from(".hero-actions", { y: 50, opacity: 0, duration: 1, ease: "power4.out" }, "-=0.8")
+          .from(".hero-graphic", { x: 100, opacity: 0, duration: 1.5, ease: "power4.out" }, "-=1")
+          .from(".search-container", { y: 100, opacity: 0, duration: 1.2, ease: "power4.out" }, "-=1.2");
+
+        // Staggered Scroll Reveal
+        gsap.registerPlugin(ScrollTrigger);
+        
+        gsap.utils.toArray('.reveal').forEach(el => {
+            gsap.to(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 90%",
+                    toggleActions: "play none none none",
+                    once: true
+                },
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: "power3.out"
+            });
+        });
+
+        // Counter Animation
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            gsap.to(counter, {
+                scrollTrigger: {
+                    trigger: counter,
+                    start: "top 90%"
+                },
+                innerText: target,
+                duration: 2,
+                snap: { innerText: 1 },
+                onUpdate: function() {
+                    this.targets()[0].innerText += (target === 99 ? '%' : '+');
+                }
+            });
+        });
+
+        // 3D Tilt Effect
+        const cards = document.querySelectorAll('.flight-card, .testimonial-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    duration: 1,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        });
+
+        // Generate Stars
+        const starsContainer = document.getElementById('stars-container');
+        if (starsContainer) {
+            const starCount = 150;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1 + 'px';
+                star.style.width = size;
+                star.style.height = size;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
+                star.style.animationDelay = Math.random() * 5 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+    });
+</script>
+{% endblock %}

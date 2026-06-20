@@ -1,0 +1,82 @@
+{% extends 'core/admin_base.html' %}
+{% block title %}Messages | SkyBound Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12">
+    <div class="flex justify-between items-end reveal">
+        <div>
+            <span class="text-indigo-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Communication Uplink</span>
+            <h1 class="font-['Space_Grotesk'] text-5xl font-black text-white tracking-tighter mb-2">User <span class="text-indigo-400">Messages</span></h1>
+            <p class="text-slate-500 text-sm font-medium">Monitoring real-time inquiries from global travelers and corporate partners.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 reveal">
+        {% if messages %}
+            {% for msg in messages %}
+            <div class="glass-panel p-8 rounded-[2.5rem] border border-white/5 hover:border-indigo-500/20 transition-all duration-500 group">
+                <div class="flex flex-col md:flex-row justify-between gap-8">
+                    <div class="space-y-4 flex-1">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                <span class="material-symbols-outlined text-lg">person</span>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-slate-600 uppercase tracking-widest font-black mb-0.5">From Traveler</p>
+                                <p class="text-white font-black tracking-tight">{{ msg.name }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-slate-400">
+                                <span class="material-symbols-outlined text-lg">alternate_email</span>
+                            </div>
+                            <p class="text-slate-400 font-medium text-sm">{{ msg.email }}</p>
+                        </div>
+
+                        <div class="pt-4 mt-4 border-t border-white/5">
+                            <p class="text-[9px] text-indigo-400 uppercase tracking-widest font-black mb-3">Subject: {{ msg.subject }}</p>
+                            <p class="text-slate-300 leading-relaxed font-medium bg-black/20 p-6 rounded-3xl border border-white/5 group-hover:border-indigo-500/10 transition-colors">
+                                {{ msg.message }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="md:w-64 flex flex-col justify-between items-end">
+                        <span class="bg-indigo-500/5 text-indigo-400 border border-indigo-500/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest">
+                            {{ msg.created_at }}
+                        </span>
+                        
+                        <a href="/admin-delete-message/{{ msg.id }}/" class="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-slate-600 hover:text-rose-400 hover:bg-rose-400/10 transition-all no-underline">
+                            <span class="material-symbols-outlined">delete_sweep</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="glass-panel p-20 rounded-[4rem] text-center border border-dashed border-white/10">
+                <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-8 text-slate-700">
+                    <span class="material-symbols-outlined text-4xl">inbox_customize</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter mb-4">No Messages Detected</h3>
+                <p class="text-slate-500 max-w-sm mx-auto">Your communication stream is currently empty. All incoming traveler inquiries will appear here.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".reveal", {
+            duration: 1.5,
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            ease: "power4.out"
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'core/admin_base.html' %}
+{% block title %}Edit Flight | SkyBound Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-12">
+    <div class="flex justify-between items-end reveal">
+        <div>
+            <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Asset
+                Modification</span>
+            <h1 class="font-['Space_Grotesk'] text-5xl font-black text-white tracking-tighter mb-2">Edit <span
+                    class="text-cyan-400">Flight</span></h1>
+        </div>
+        <a href="{% url 'admin_dashboard' %}"
+            class="relative z-50 bg-white/5 text-slate-400 px-6 py-3 rounded-xl font-bold hover:bg-white/10 hover:text-white transition-all flex items-center gap-2 no-underline text-[10px] uppercase tracking-widest border border-white/10">
+            <span class="material-symbols-outlined text-sm">arrow_back</span> Return
+        </a>
+    </div>
+
+    <div
+        class="glass-panel w-full rounded-[3rem] border border-white/10 relative z-10 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)] reveal">
+        <div class="p-10 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+            <div>
+                <h3 class="font-['Space_Grotesk'] text-3xl text-white font-black tracking-tight">Flight <span
+                        class="text-cyan-400">{{ flight.flight_number }}</span></h3>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Update Protocol</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-cyan-400/10 flex items-center justify-center text-cyan-400">
+                <span class="material-symbols-outlined">edit_note</span>
+            </div>
+        </div>
+
+        <form action="/admin-edit-flight/{{ flight.id }}/" method="POST" class="p-10 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Tail
+                        Number</label>
+                    <input name="flight_number" value="{{ flight.flight_number }}" required
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white placeholder-slate-800"
+                        type="text" />
+                </div>
+                <div class="space-y-3">
+                    <label
+                        class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Classification</label>
+                    <select name="category"
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white appearance-none">
+                        <option value="International" {% if flight.category=='International' %}selected{% endif %}>
+                            International</option>
+                        <option value="Domestic" {% if flight.category=='Domestic' %}selected{% endif %}>Domestic
+                        </option>
+                        <option value="Private" {% if flight.category=='Private' %}selected{% endif %}>Private</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Origin
+                        Node</label>
+                    <input name="origin" value="{{ flight.origin }}" required
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white placeholder-slate-800"
+                        type="text" />
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Destination
+                        Node</label>
+                    <input name="destination" value="{{ flight.destination }}" required
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white placeholder-slate-800"
+                        type="text" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Departure
+                        Schedule</label>
+                    <input name="departure_time" value="{{ flight.departure_time }}" required
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white"
+                        type="text" />
+                    <p class="text-[10px] text-slate-600 px-2 mt-1">Format: YYYY-MM-DD HH:MM:SS</p>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Arrival
+                        Schedule</label>
+                    <input name="arrival_time" value="{{ flight.arrival_time }}" required
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white"
+                        type="text" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Unit Price
+                        ($)</label>
+                    <input name="price" value="{{ flight.price }}" required step="0.01"
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white placeholder-slate-800"
+                        type="number" />
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Payload Capacity
+                        (Seats)</label>
+                    <input name="seats" value="{{ flight.seats_available }}" required
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-sm focus:border-cyan-400/50 outline-none transition-all text-white placeholder-slate-800"
+                        type="number" />
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-white/5">
+                <button type="submit"
+                    class="w-full bg-cyan-400 text-cyan-950 py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-[10px] hover:shadow-[0_20px_40px_rgba(34,211,238,0.3)] transition-all active:scale-[0.98]">
+                    Save Modification
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from(".reveal", {
+            duration: 1.2,
+            y: 40,
+            opacity: 0,
+            stagger: 0.1,
+            ease: "power3.out"
+        });
+    });
+</script>
+{% endblock %}
