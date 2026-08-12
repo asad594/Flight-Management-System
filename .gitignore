@@ -21,3 +21,7 @@ ENV/
 # Temporary / Output files
 search_output.html
 scratch/
+.pytest_cache/
+.DS_Store
+Thumbs.db
+
