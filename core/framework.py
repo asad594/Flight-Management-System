@@ -2,8 +2,10 @@ import re
 import os
 
 class TemplateEngine:
+    """Regex-based lightweight template rendering engine supporting template inheritance, loops, conditionals, and filters."""
     @staticmethod
-    def render(template_path, context=None):
+    def render(template_path: str, context: dict = None) -> str:
+        """Renders an HTML template with the given context dictionary."""
         if context is None:
             context = {}
             
@@ -214,14 +216,17 @@ class TemplateEngine:
         return content
 
 class Router:
+    """Lightweight URL router for mapping request URL paths to view handler functions."""
     routes = {}
 
     @classmethod
-    def add(cls, path, handler):
+    def add(cls, path: str, handler):
+        """Registers a route path and its associated view handler function."""
         cls.routes[path] = handler
 
     @classmethod
-    def match(cls, path):
+    def match(cls, path: str):
+        """Matches an incoming request path against registered route patterns and extracts path parameters."""
         path = path.split('?')[0]
         
         # Try exact and then flexible
@@ -250,3 +255,4 @@ class Router:
                     return handler, {}
                     
         return None, {}
+
