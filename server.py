@@ -9,6 +9,8 @@ import core.custom_views
 SESSION_STORE = {}
 
 class AppHandler(BaseHTTPRequestHandler):
+    """Standalone multithreaded HTTP request handler serving template views and static assets."""
+
     def log_message(self, format, *args):
         # Keep the default logging
         super().log_message(format, *args)
@@ -27,7 +29,8 @@ class AppHandler(BaseHTTPRequestHandler):
             return SESSION_STORE[session_id], session_id
         return None, None
 
-    def build_request(self, path, query, method, post_data=None, user=None):
+    def build_request(self, path: str, query: dict, method: str, post_data: dict = None, user = None):
+        """Constructs a mock Request object compatible with view functions."""
         return type('Request', (), {
             'path': path,
             'GET': query,
