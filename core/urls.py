@@ -1,3 +1,8 @@
+"""
+Django URL Dispatcher Routing Rules for Core Flight Management Application.
+Maps endpoint paths to corresponding Django view handlers.
+"""
+
 from django.urls import path
 from . import views
 
