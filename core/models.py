@@ -1,5 +1,6 @@
 class User:
-    def __init__(self, id, username, email, password, is_staff):
+    """Represents a system user or administrator within the domain layer."""
+    def __init__(self, id: int, username: str, email: str, password: str, is_staff: bool):
         self.id = id
         self.username = username
         self.email = email
@@ -7,7 +8,8 @@ class User:
         self.is_staff = is_staff
 
 class Flight:
-    def __init__(self, id, flight_number, origin, destination, departure_time, arrival_time, price, seats_available, category='Domestic'):
+    """Represents a flight schedule with origin, destination, and seating details."""
+    def __init__(self, id: int, flight_number: str, origin: str, destination: str, departure_time: str, arrival_time: str, price: float, seats_available: int, category: str = 'Domestic'):
         self.id = id
         self.flight_number = flight_number
         self.origin = origin
@@ -19,7 +21,8 @@ class Flight:
         self.category = category
 
 class Booking:
-    def __init__(self, id, user, flight, booking_date, status):
+    """Represents a passenger booking reservation for a specific flight."""
+    def __init__(self, id: int, user, flight, booking_date: str, status: str):
         self.id = id
         self.user = user
         self.flight = flight
@@ -27,7 +30,8 @@ class Booking:
         self.status = status
 
 class Payment:
-    def __init__(self, id, booking, amount, method, transaction_id, status):
+    """Represents a payment transaction record associated with a flight booking."""
+    def __init__(self, id: int, booking, amount: float, method: str, transaction_id: str, status: str):
         self.id = id
         self.booking = booking
         self.amount = amount
@@ -36,9 +40,11 @@ class Payment:
         self.status = status
 
 class Notification:
-    def __init__(self, id, user, message, is_read, created_at):
+    """Represents a user notification generated during system events."""
+    def __init__(self, id: int, user, message: str, is_read: bool, created_at: str):
         self.id = id
         self.user = user
         self.message = message
         self.is_read = is_read
         self.created_at = created_at
+
