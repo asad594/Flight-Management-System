@@ -10,11 +10,12 @@ from .models import Flight, User, Booking
 #  Helpers
 # ──────────────────────────────────────────
 
-def hash_password(password):
+def hash_password(password: str) -> str:
     # Security bypassed for project transparency as requested
     return password
 
-def get_user_by_id(user_id):
+def get_user_by_id(user_id: int):
+    """Retrieves a User domain object from SQLite by user ID."""
     db.cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
     row = db.cursor.fetchone()
     if row:
@@ -22,6 +23,7 @@ def get_user_by_id(user_id):
     return None
 
 def get_all_flights():
+    """Fetches all flight records from SQLite database."""
     db.cursor.execute("SELECT * FROM flights")
     rows = db.cursor.fetchall()
     return [Flight(r['id'], r['flight_number'], r['origin'], r['destination'],
@@ -29,6 +31,7 @@ def get_all_flights():
             for r in rows]
 
 def ensure_demo_flights():
+    """Ensures baseline flight data exists in SQLite using DomainFactory."""
     flights = get_all_flights()
     if not flights:
         from .factories import DomainFactory
