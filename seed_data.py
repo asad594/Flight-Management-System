@@ -1,3 +1,8 @@
+"""
+Database Seeding Script for SkyBound Flight Management System.
+Populates initial superuser administrator accounts and default sample flight schedules into Django ORM.
+"""
+
 import os
 import django
 from django.utils import timezone
