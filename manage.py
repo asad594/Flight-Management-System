@@ -3,6 +3,7 @@ import os
 import sys
 
 def main():
+    """Command-line utility entrypoint for Django administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'flight_system.settings')
     try:
         from django.core.management import execute_from_command_line

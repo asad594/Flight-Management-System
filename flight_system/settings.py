@@ -1,5 +1,9 @@
-import os
+"""
+SkyBound Django Application Settings.
+Provides optional Django configuration settings alongside standalone custom Python server mode.
+"""
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
