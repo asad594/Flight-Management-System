@@ -122,3 +122,18 @@ python seed_data.py
 ├── seed_data.py         # DB seeding script
 └── homepage.png         # Screenshot of the user interface
 ```
+
+---
+
+## 🧪 Testing & Verification
+
+Run unit tests and custom template integration verification:
+
+```bash
+# Run Django test suite
+python manage.py test
+
+# Run custom template engine & view search test
+python test_search.py
+```
+
