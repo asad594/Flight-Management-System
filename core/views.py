@@ -10,6 +10,7 @@ from .singleton import AppConfigManager
 from django.utils import timezone
 
 def home(request):
+    """Renders the homepage template showcasing featured flights and system brand."""
     config = AppConfigManager()
     flights = Flight.objects.all()[:3]
     return render(request, 'core/home.html', {
@@ -18,6 +19,7 @@ def home(request):
     })
 
 def about_view(request):
+    """Renders the about page outlining flight system origins and technology stack."""
     return render(request, 'core/about.html')
 
 def register_view(request):
