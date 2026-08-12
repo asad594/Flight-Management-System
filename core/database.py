@@ -3,6 +3,8 @@ import datetime
 import threading
 
 class Database:
+    """Thread-safe SQLite database manager providing thread-local cursor instances."""
+
     def __init__(self):
         self.conn = sqlite3.connect('db.sqlite3', check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
@@ -10,12 +12,14 @@ class Database:
         self.setup()
 
     @property
-    def cursor(self):
+    def cursor(self) -> sqlite3.Cursor:
+        """Retrieves or initializes a thread-local SQLite cursor."""
         if not hasattr(self._local, 'cursor'):
             self._local.cursor = self.conn.cursor()
         return self._local.cursor
 
-    def setup(self):
+    def setup(self) -> None:
+        """Initializes the database schema if tables do not exist."""
         # Create tables if they don't exist
         self.cursor.executescript('''
             CREATE TABLE IF NOT EXISTS users (
