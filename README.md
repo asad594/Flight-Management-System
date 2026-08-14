@@ -127,13 +127,45 @@ python seed_data.py
 
 ## 🧪 Testing & Verification
 
-Run unit tests and custom template integration verification:
+SkyBound includes an automated unit test suite covering GoF design patterns, domain models, factory persistence, and router pattern matching.
+
+### Run Test Suites
 
 ```bash
-# Run Django test suite
+# Run comprehensive Django test suite (Models, Patterns, Factories, Router)
 python manage.py test
 
-# Run custom template engine & view search test
+# Run standalone integration test for custom regex template rendering and flight queries
 python test_search.py
 ```
+
+### Test Coverage Highlights
+
+| Test Case | Description | Target Module |
+|-----------|-------------|---------------|
+| `DomainModelTestCase` | Validates attribute integrity, string formatting (`__str__`), and debug representations (`__repr__`) | `core/models.py` |
+| `DesignPatternTestCase` | Verifies Singleton configuration consistency, Strategy payment execution, and Observer event dispatching | `core/singleton.py`, `core/strategies.py`, `core/observers.py` |
+| `DomainFactoryTestCase` | Asserts SQLite database persistence and object construction through factory methods | `core/factories.py` |
+| `RouterTestCase` | Validates regex URL matching, trailing slash flexibility, and integer path parameter extraction | `core/framework.py` |
+
+---
+
+## 🏛️ Domain Model Architecture
+
+SkyBound's domain layer is decoupled from framework dependencies and mapped to SQLite:
+
+| Model | Attributes | Description |
+|---|---|---|
+| `User` | `id`, `username`, `email`, `password`, `is_staff` | Represents passenger accounts and system administrators |
+| `Flight` | `flight_number`, `origin`, `destination`, `departure_time`, `arrival_time`, `price`, `seats_available`, `category` | Represents domestic and international scheduled flights |
+| `Booking` | `user`, `flight`, `booking_date`, `status` | Tracks passenger reservations and confirmations |
+| `Payment` | `booking`, `amount`, `method`, `transaction_id`, `status` | Records payment transaction audit trails |
+| `Notification` | `user`, `message`, `is_read`, `created_at` | Manages user trip alerts and real-time flight notifications |
+
+---
+
+## 📜 License & Acknowledgments
+
+This project is built for educational, portfolio, and flight management demonstration purposes. Built with pure Python standard library elegance and modern web glassmorphic design.
+
 
