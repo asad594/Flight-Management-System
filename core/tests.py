@@ -123,5 +123,40 @@ class DomainFactoryTestCase(TestCase):
         self.assertEqual(booking.status, 'Confirmed')
         self.assertEqual(booking.flight.id, flight.id)
 
+class RouterTestCase(TestCase):
+    """Unit tests verifying custom framework Router path registration and pattern matching."""
+
+    def test_router_static_path_match(self):
+        """Verify Router correctly registers and resolves static URL endpoints."""
+        from .framework import Router
+        dummy_handler = lambda req: "homepage_output"
+        Router.add('/test-home-route', dummy_handler)
+
+        handler, params = Router.match('/test-home-route')
+        self.assertEqual(handler, dummy_handler)
+        self.assertEqual(params, {})
+
+        # Trailing slash flexibility
+        handler, params = Router.match('/test-home-route/')
+        self.assertEqual(handler, dummy_handler)
+
+    def test_router_dynamic_param_match(self):
+        """Verify Router correctly parses integer path parameters."""
+        from .framework import Router
+        dummy_booking_handler = lambda req, flight_id: f"booking_{flight_id}"
+        Router.add('/test-book/<int:flight_id>/', dummy_booking_handler)
+
+        handler, params = Router.match('/test-book/42/')
+        self.assertEqual(handler, dummy_booking_handler)
+        self.assertEqual(params, {'flight_id': 42})
+
+    def test_router_unmatched_path(self):
+        """Verify Router returns None for unmatched URL paths."""
+        from .framework import Router
+        handler, params = Router.match('/unregistered-route-xyz-404')
+        self.assertIsNone(handler)
+        self.assertEqual(params, {})
+
+
 
 
