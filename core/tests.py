@@ -60,6 +60,16 @@ class DesignPatternTestCase(TestCase):
         self.assertIs(config1, config2)
         self.assertEqual(config1.get_setting("system_name"), "SkyBound")
 
+    def test_singleton_set_and_has_setting(self):
+        """Verify AppConfigManager dynamic setting configuration and presence checks."""
+        config = AppConfigManager()
+        self.assertTrue(config.has_setting("system_name"))
+        self.assertFalse(config.has_setting("non_existent_key_xyz"))
+        config.set_setting("support_email", "support@skybound.aero")
+        self.assertTrue(config.has_setting("support_email"))
+        self.assertEqual(config.get_setting("support_email"), "support@skybound.aero")
+
+
     def test_payment_strategy(self):
         """Verify PaymentContext correctly executes varied payment strategies."""
         card_context = PaymentContext(CreditCardStrategy())
