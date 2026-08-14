@@ -17,3 +17,12 @@ class AppConfigManager:
         """Retrieves a global configuration setting by key."""
         return getattr(self, key, None)
 
+    def set_setting(self, key: str, value: Any) -> None:
+        """Sets or updates a global configuration setting dynamically."""
+        setattr(self, key, value)
+
+    def has_setting(self, key: str) -> bool:
+        """Checks whether a configuration key is defined."""
+        return hasattr(self, key)
+
+
