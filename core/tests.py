@@ -73,12 +73,15 @@ class DesignPatternTestCase(TestCase):
     def test_payment_strategy(self):
         """Verify PaymentContext correctly executes varied payment strategies."""
         card_context = PaymentContext(CreditCardStrategy())
+        self.assertEqual(card_context.strategy.name, "Credit Card")
         self.assertIn("Credit Card", card_context.execute_payment(100.0))
 
         easypaisa_context = PaymentContext(EasyPaisaStrategy())
+        self.assertEqual(easypaisa_context.strategy.name, "EasyPaisa / JazzCash")
         self.assertIn("EasyPaisa", easypaisa_context.execute_payment(150.0))
 
         paypal_context = PaymentContext(PayPalStrategy())
+        self.assertEqual(paypal_context.strategy.name, "PayPal")
         self.assertIn("PayPal", paypal_context.execute_payment(200.0))
 
     def test_observer_pattern(self):
@@ -87,5 +90,38 @@ class DesignPatternTestCase(TestCase):
         observer = BookingObserver()
         subject.attach(observer)
         self.assertIn(observer, subject._observers)
+
+class DomainFactoryTestCase(TestCase):
+    """Unit tests verifying DomainFactory creation and database persistence."""
+
+    def test_domain_factory_user_creation(self):
+        """Verify DomainFactory creates and returns a valid User domain object."""
+        from .factories import DomainFactory
+        import uuid
+        uname = f"testuser_{uuid.uuid4().hex[:6]}"
+        user = DomainFactory.create_user(uname, f"{uname}@skybound.com", "securepass123")
+        self.assertIsNotNone(user.id)
+        self.assertEqual(user.username, uname)
+        self.assertEqual(user.is_staff, 0)
+
+    def test_domain_factory_flight_and_booking(self):
+        """Verify DomainFactory creates a flight and subsequent booking reservation."""
+        from .factories import DomainFactory
+        import uuid
+        fnum = f"SK-T{uuid.uuid4().hex[:4].upper()}"
+        flight = DomainFactory.create_flight(
+            fnum, 'Islamabad', 'Doha', '2026-10-01 06:00:00', '2026-10-01 09:30:00', 350.0, 75, 'International'
+        )
+        self.assertIsNotNone(flight.id)
+        self.assertEqual(flight.flight_number, fnum)
+        self.assertEqual(flight.seats_available, 75)
+
+        uname = f"booker_{uuid.uuid4().hex[:6]}"
+        user = DomainFactory.create_user(uname, f"{uname}@skybound.com", "pass")
+        booking = DomainFactory.create_booking(user, flight)
+        self.assertIsNotNone(booking.id)
+        self.assertEqual(booking.status, 'Confirmed')
+        self.assertEqual(booking.flight.id, flight.id)
+
 
 
