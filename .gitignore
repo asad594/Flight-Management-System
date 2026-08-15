@@ -2,8 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
-# Django files (if any)
+# Django / SQLite files
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -11,17 +12,37 @@ db.sqlite3-journal
 # VS Code / IDE settings
 .vscode/
 .idea/
+*.sublime-project
+*.sublime-workspace
 
 # Environment files
 .env
+.env.local
+.env.*.local
 venv/
 env/
 ENV/
+env.bak/
+venv.bak/
+
+# Testing and Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 # Temporary / Output files
 search_output.html
 scratch/
-.pytest_cache/
+*.log
 .DS_Store
 Thumbs.db
+
 
