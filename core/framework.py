@@ -1,11 +1,35 @@
-import re
+"""
+Mini Web Framework Engine for SkyBound Flight Management System.
+
+Provides pure-Python server components:
+- TemplateEngine: Lightweight regex-based template rendering supporting inheritance,
+  loops, conditionals, variable lookups, and Django-compatible tag abstractions.
+- Router: URL dispatching router handling static and dynamic regex route pattern matching.
+"""
+
 import os
+import re
+from typing import Any, Callable, Dict, Optional, Tuple
+
 
 class TemplateEngine:
-    """Regex-based lightweight template rendering engine supporting template inheritance, loops, conditionals, and filters."""
+    """
+    Regex-based lightweight template rendering engine supporting template inheritance,
+    loops, conditionals, variable lookups, and formatting filters.
+    """
+
     @staticmethod
-    def render(template_path: str, context: dict = None) -> str:
-        """Renders an HTML template with the given context dictionary."""
+    def render(template_path: str, context: Optional[Dict[str, Any]] = None) -> str:
+        """
+        Renders an HTML template file with the given context data dictionary.
+
+        Args:
+            template_path: Relative path to the template inside core/templates/.
+            context: Dictionary containing template variables and user session.
+
+        Returns:
+            Fully rendered HTML markup string.
+        """
         if context is None:
             context = {}
             
@@ -215,18 +239,38 @@ class TemplateEngine:
         
         return content
 
+
 class Router:
-    """Lightweight URL router for mapping request URL paths to view handler functions."""
-    routes = {}
+    """
+    Lightweight URL router for registering and resolving request routes.
+
+    Maps URL pattern strings to view handler functions and extracts
+    dynamic typed path parameters (e.g. integer parameters).
+    """
+    routes: Dict[str, Callable] = {}
 
     @classmethod
-    def add(cls, path: str, handler):
-        """Registers a route path and its associated view handler function."""
+    def add(cls, path: str, handler: Callable) -> None:
+        """
+        Registers a route path and its associated view handler function.
+
+        Args:
+            path: URL path pattern string (e.g. '/book/<int:flight_id>/').
+            handler: Callable view function taking request and route kwargs.
+        """
         cls.routes[path] = handler
 
     @classmethod
-    def match(cls, path: str):
-        """Matches an incoming request path against registered route patterns and extracts path parameters."""
+    def match(cls, path: str) -> Tuple[Optional[Callable], Dict[str, Any]]:
+        """
+        Matches an incoming request path against registered route patterns.
+
+        Args:
+            path: Incoming HTTP URL path.
+
+        Returns:
+            Tuple of (handler_func, params_dict) or (None, {}) if not found.
+        """
         path = path.split('?')[0]
         
         # Try exact and then flexible
@@ -255,4 +299,5 @@ class Router:
                     return handler, {}
                     
         return None, {}
+
 
