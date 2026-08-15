@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flight-management-system"
+version = "1.0.0"
+description = "Dual-runtime Flight Management and Reservation System (Django & Pure-Python HTTP Engine)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "SkyBound Engineering Team" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Framework :: Django",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["core", "."]
+python_files = ["tests.py", "test_*.py"]
+addopts = "-ra -q --tb=short"
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | env
+  | venv
+  | migrations
+  | scratch
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+skip = ["migrations", ".venv", "venv", "env"]
