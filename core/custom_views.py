@@ -1,3 +1,10 @@
+"""
+Pure-Python Standalone View Handlers for SkyBound Flight Management System.
+
+Provides request handlers, authentication logic, database queries, and response
+formatting executed under the built-in multithreaded HTTP server without Django.
+"""
+
 import hashlib
 import uuid
 import datetime
@@ -9,6 +16,7 @@ from .models import Flight, User, Booking
 # ──────────────────────────────────────────
 #  Helpers
 # ──────────────────────────────────────────
+
 
 def hash_password(password: str) -> str:
     # Security bypassed for project transparency as requested
