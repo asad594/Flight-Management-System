@@ -132,11 +132,11 @@ SkyBound includes an automated unit test suite covering GoF design patterns, dom
 ### Run Test Suites
 
 ```bash
-# Run comprehensive Django test suite (Models, Patterns, Factories, Router)
+# Run comprehensive unit and integration test suite
 python manage.py test
 
-# Run standalone integration test for custom regex template rendering and flight queries
-python test_search.py
+# Or execute with pytest
+pytest
 ```
 
 ### Test Coverage Highlights
@@ -147,6 +147,8 @@ python test_search.py
 | `DesignPatternTestCase` | Verifies Singleton configuration consistency, Strategy payment execution, and Observer event dispatching | `core/singleton.py`, `core/strategies.py`, `core/observers.py` |
 | `DomainFactoryTestCase` | Asserts SQLite database persistence and object construction through factory methods | `core/factories.py` |
 | `RouterTestCase` | Validates regex URL matching, trailing slash flexibility, and integer path parameter extraction | `core/framework.py` |
+| `CustomViewsIntegrationTestCase` | Validates template rendering and query handling under standalone custom engine | `core/custom_views.py` |
+
 
 ---
 

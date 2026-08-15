@@ -158,5 +158,27 @@ class RouterTestCase(TestCase):
         self.assertEqual(params, {})
 
 
+class CustomViewsIntegrationTestCase(TestCase):
+    """Integration tests verifying custom standalone framework views."""
+
+    def test_search_flights_rendering(self):
+        """Verify search_flights renders HTML response for valid query."""
+        from .custom_views import search_flights
+        from .models import User
+
+        class MockRequest:
+            pass
+
+        req = MockRequest()
+        req.user = User(1, 'admin', 'admin@skybound.com', 'pass', 1)
+        req.path = '/search/'
+        req.GET = {'origin': 'Karachi', 'destination': 'Dubai'}
+
+        res = search_flights(req)
+        self.assertIsInstance(res, str)
+        self.assertIn("SkyBound", res)
+
+
+
 
 
